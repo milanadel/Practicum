@@ -1,0 +1,81 @@
+# 3 задание по практикуму
+import csv
+import pickle
+
+# Загрузка таблицы из файла формата csv
+def load_table_csv(csvexp):
+    with open(csvexp, 'r') as file:
+        reader = csv.reader(file)
+        table = [row for row in reader]
+    return table
+
+# Сохранение таблицы в файл формата csv
+def save_table_csv(table, csvexp):
+    with open(csvexp, 'w', newline='') as file:
+        writer = csv.writer(file)
+        writer.writerows(table)
+
+# Загрузка таблицы из файла формата pickle
+def load_table_pickle(csvexp):
+    with open(csvexp, 'rb') as file:
+        table = pickle.load(file)
+    return table
+
+# Сохранение таблицы в файл формата pickle
+def save_table_pickle(table, csvexp):
+    with open(csvexp, 'wb') as file:
+        pickle.dump(table, file)
+
+# Сохранение таблицы в текстовом файле
+def save_table_text(table, csvexp):
+    with open(csvexp, 'w') as file:
+        for row in table:
+            file.write('\t'.join(row) + '\n')
+
+# Базовый класс для работы с таблицами
+class Table:
+    def __init__(self, data):
+        self.data = data
+
+    def get_rows_by_number(self, start, stop=None, copy_table=False):
+        if copy_table:
+            return Table(self.data[start:stop])
+        else:
+            return self.data[start:stop]
+
+    def get_rows_by_index(self, *args, copy_table=False):
+        if copy_table:
+            return Table([row for row in self.data if row[0] in args])
+        else:
+            return [row for row in self.data if row[0] in args]
+
+# Пример использования
+table_data = [
+    ['ИМЯ', 'ВОЗРАСТ', 'ГОРОД'],
+    ['Алёша', '25', 'Йорк'],
+    ['Вова', '30', 'Сухум'],
+    ['Чаплин', '20', 'Луганск']
+]
+
+# Сохранение таблицы в файл формата csv
+save_table_csv(table_data, 'table.csv')
+
+# Загрузка таблицы из файла формата csv
+loaded_table = load_table_csv('table.csv')
+
+# Сохранение таблицы в файл формата pickle
+save_table_pickle(table_data, 'table.pickle')
+
+# Загрузка таблицы из файла формата pickle
+loaded_table = load_table_pickle('table.pickle')
+
+# Создание экземпляра класса Table
+table = Table(table_data)
+
+# Получение строк по номеру
+rows1 = table.get_rows_by_number(1, 3)
+print(rows1)
+
+# Получение строк по значению в первом столбце
+rows2 = table.get_rows_by_index('Алёша', 'Вова')
+print(rows2)
